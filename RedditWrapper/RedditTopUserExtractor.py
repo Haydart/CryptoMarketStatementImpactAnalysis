@@ -8,11 +8,7 @@ considered_subreddits = ['crypto', 'Bitcoin', 'litecoin', 'btc', 'Cryptocurrency
                          'CryptoMarkets', 'ethereum']
 
 
-reddit = praw.Reddit(client_id='niEeEjiqEMilzg',
-                     client_secret='hi2pHt9T1cjiKD_FFYfL8OdkGZ8',
-                     password='Lemur24',
-                     user_agent='testscript by /u/Jumanchi',
-                     username='Jumanchi')
+
 
 
 print(reddit.user.me())

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import io
+from ast import literal_eval
 
 #
 #   Top influencers are defined as users with highest SCORE:
@@ -17,29 +18,21 @@ import io
 
 def check_author(redditors, author):
     if author not in redditors.index:
-        redditors = redditors.append({'name': author,
-                                      'user_comment_karma': 0, ## rigt now data does not include this: author.comment_karma
-                                      'crypto_comments_count': 0,
-                                      'crypto_comments_upvotes': 0,
-                                      'crypto_threads_count': 0,
-                                      'crypto_threads_upvotes': 0,
-                                      'crypto_threads_comments_count': 0,
-                                      'influencer_score': 0}, ignore_index=True)
-    #redditors.set_index('name')
+        redditors.loc[author] = [0, 0, 0, 0, 0, 0, 0.0]
     return redditors
 
 
 def handle_submission(redditors, submission):
     submission_author = submission['author']
     redditors = check_author(redditors, submission_author)
-    redditor = redditors.loc(submission_author)
+    redditor = redditors.loc[submission_author]
     redditor['crypto_threads_count'] = redditor['crypto_threads_count'] + 1
     redditor['crypto_threads_upvotes'] = redditor['crypto_threads_upvotes'] + submission['score']
     redditor['crypto_threads_comments_count'] = redditor['crypto_threads_comments_count'] + submission['comms_num']
 
 
 def handle_comments(redditors, comments):
-
+    comments = literal_eval(comments)
     for comment in comments:
         comment_author = comment.author
         check_author(redditors, comment_author)
@@ -75,23 +68,15 @@ columns = ['name',
 dtype = dict(zip(columns, [str, int, int, int, int, int, int, float]))
 
 reddit_data = pd.read_csv("reddit_data", sep='\t')
+pd.eval(reddit_data['comments'])
 
 # redditors = pd.read_csv(io.StringIO(""),
 #                         names=columns,
 #                         dtype=dtype,
 #                         index_col='name')
 
-redditors = pd.DataFrame(
-                         columns=['name',
-                                  'user_comment_karma',
-                                  'crypto_comments_count',
-                                  'crypto_comments_upvotes',
-                                  'crypto_threads_count',
-                                  'crypto_threads_upvotes',
-                                  'crypto_threads_comments_count',
-                                  'influencer_score'])
-                         #dtype=[np.str, np.int64, np.int64, np.int64, np.int64, np.int64, np.int64, np.float64])
-redditors.set_index('name')
+redditors = pd.DataFrame(columns=columns)
+redditors.set_index('name', inplace=True)
 print(reddit_data.head())
 print(redditors.head())
 

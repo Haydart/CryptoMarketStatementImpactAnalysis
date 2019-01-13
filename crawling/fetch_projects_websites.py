@@ -28,4 +28,4 @@ def fetch_projects_website_links():
 
 
 if __name__ == '__main__':
-# fetch_projects_website_links()
+    fetch_projects_website_links()

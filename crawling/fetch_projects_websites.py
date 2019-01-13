@@ -17,7 +17,7 @@ top_cryptocurrencies_names = ["Bitcoin", "XRP", "Ethereum", "Stellar", "Tether",
 
 
 def fetch_projects_website_links():
-    with open("crypto_projects_links.txt", "a") as projects_links:
+    with open("output/crypto_projects_links.txt", "a") as projects_links:
         for project_id, project_name in enumerate(top_cryptocurrencies_names[24:35], 24):
             search_results = google.search(project_name + " project website")
             if search_results and search_results[0]:

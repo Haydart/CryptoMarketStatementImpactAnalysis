@@ -29,5 +29,9 @@ def clean_tweet(tweet):
     return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t]) | (\w+:\ / \ / \S+)", " ", tweet).split())
 
 
+def get_unique_tweets(dataframe):
+    return dataframe.drop_duplicates('tweet_id')
+
+
 def sort_by(dataframe, sort_column):
     return dataframe.sort_values(by=sort_column, ascending=False)

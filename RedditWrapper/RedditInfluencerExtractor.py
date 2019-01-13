@@ -2,19 +2,8 @@ import pandas as pd
 import numpy as np
 import io
 from ast import literal_eval
+from praw.models import Comment
 
-#
-#   Top influencers are defined as users with highest SCORE:
-#   SCORE calculation is yet to be optimized
-#
-#   Current SCORE calculation:
-#       SCORE =
-#
-#
-#
-#
-#
-#
 
 def check_author(redditors, author):
     if author not in redditors.index:
@@ -51,7 +40,7 @@ def calculate_influencer_score(redditor):
     redditor['influencer_score'] = redditor['crypto_comments_count'] \
                                    + redditor['crypto_comments_upvotes'] \
                                    + 10 * redditor['crypto_threads_count'] \
-                                   + 10 * redditor['crypto_threads_upvotes'] \
+                                   + 5 * redditor['crypto_threads_upvotes'] \
                                    + 10 * redditor['crypto_threads_comments_count']
 
 
@@ -68,12 +57,7 @@ columns = ['name',
 dtype = dict(zip(columns, [str, int, int, int, int, int, int, float]))
 
 reddit_data = pd.read_csv("reddit_data", sep='\t')
-pd.eval(reddit_data['comments'])
-
-# redditors = pd.read_csv(io.StringIO(""),
-#                         names=columns,
-#                         dtype=dtype,
-#                         index_col='name')
+#pd.eval(reddit_data['comments'])
 
 redditors = pd.DataFrame(columns=columns)
 redditors.set_index('name', inplace=True)

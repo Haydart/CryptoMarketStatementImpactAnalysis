@@ -52,7 +52,6 @@ def create_datetime_sentiment_dataset(data_path, window_time):
     for file in files:
         with open(file, encoding='utf-8') as data_file:
             json_file = json.load(data_file)
-            #       df = pd.DataFrame.from_dict(json_file)
             df = pd.DataFrame(json_file)
             df = get_unique_tweets(df)
             df = df.sort_values(by=["date", "time"])

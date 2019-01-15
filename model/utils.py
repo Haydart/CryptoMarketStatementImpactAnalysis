@@ -16,6 +16,10 @@ def get_data_from_to(df, column_date_name, time_from, time_to):
     return df.loc[mask]
 
 
+def merge_datasets_by_date(df1, df2, column_date_name):
+    return pd.merge(df1, df2, on=column_date_name, how='inner')
+
+
 def plot_data(df, column_date_name, column_data_name):
     time = df[column_date_name]
     values = df[column_data_name]

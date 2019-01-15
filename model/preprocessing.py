@@ -1,11 +1,5 @@
-import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-
-
-def parse_date(df, column_date_name):
-    df[column_date_name] = pd.to_datetime(df[column_date_name])
-    return df
 
 
 def normalize_dataset(df):

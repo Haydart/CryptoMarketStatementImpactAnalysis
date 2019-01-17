@@ -2,9 +2,8 @@ import glob
 import json
 import pandas as pd
 import re
-import numpy as np
-from datetime import datetime, timedelta
-from CryptoStatementImpactAnalysis.model.utils import get_data_from_to
+from datetime import datetime
+from CryptoStatementImpactAnalysis.model.utils import avg_sentiments_from_text_in_time
 
 
 def file_to_dataframe(file_path):
@@ -42,33 +41,25 @@ def date_and_time(row):
     return row["date"] + " " + row["time"]
 
 
+def create_datetime_sentiment_for_file(file, date_format, window_size):
+    with open(file, encoding='utf-8') as data_file:
+        json_file = json.load(data_file)
+        df = pd.DataFrame(json_file)
+        df = get_unique_tweets(df)
+        df = df.sort_values(by=["date", "time"])
+
+        date_times = [datetime.strptime(date_and_time(row), date_format) for _, row in df.iterrows()]
+        df["datetime"] = date_times
+        return avg_sentiments_from_text_in_time(df, "tweet", "datetime", window_size)
+
+
 # window_time - now in days
-def create_datetime_sentiment_dataset(data_path, window_time):
+def create_datetime_sentiment_dataset(data_path, window_size):
     dataset = pd.DataFrame(columns=["sentiment_avg", "date_time"])
-    files = glob.glob(data_path + "/*.json")
-    time_delta = timedelta(days=window_time)
     date_format = "%Y-%m-%d %H:%M:%S"
-
+    files = glob.glob(data_path + "/*.json")
     for file in files:
-        with open(file, encoding='utf-8') as data_file:
-            json_file = json.load(data_file)
-            df = pd.DataFrame(json_file)
-            df = get_unique_tweets(df)
-            df = df.sort_values(by=["date", "time"])
-
-            date_times = [datetime.strptime(date_and_time(row), date_format) for _, row in df.iterrows()]
-            df["datetime"] = date_times
-
-            start_date_time = date_times[0].date()
-            end_date_time = date_times[-1].date()
-
-            while start_date_time <= end_date_time:
-                df2 = get_data_from_to(df, "datetime", start_date_time, start_date_time + time_delta)
-                if not df2.empty:
-                    sentiment_avg = np.mean(df2["sentiment"])
-                    dataset.loc[len(dataset)] = [sentiment_avg, start_date_time]
-                start_date_time += time_delta
-
+        dataset.loc[len(dataset)] = create_datetime_sentiment_for_file(file, date_format, window_size)
     return dataset
 
 

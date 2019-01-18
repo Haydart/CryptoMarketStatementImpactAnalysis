@@ -9,7 +9,7 @@ def keep_unique_twitter_handles():
     unique_links_df = twitter_handles_df.drop_duplicates()
     unique_links_df.reset_index(inplace=True)
     unique_handles_df = unique_links_df[unique_links_df.columns[-1]].apply(lambda link: link.split("/")[-1])
-    unique_handles_df.to_csv("output/unique_twitter_handles.csv")
+    unique_handles_df.to_csv("output/unique_twitter_handles.csv", index=False)
 
 
 def clean_tweets():

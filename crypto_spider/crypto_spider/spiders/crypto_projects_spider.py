@@ -45,47 +45,47 @@ class CryptoProjectsSpider(CrawlSpider):
                        "vergecurrency.com",
                        "sia.tech",
                        "steem.com"]
-    start_urls = ["https://bitcoin.org/"]
 
-    # "https://ripple.com/"
-    # "https://www.ethereum.org/",
-    # "https://bitcoin.org/",
-    # "https://ripple.com/",
-    # "https://www.ethereum.org/",
-    # "https://www.stellar.org/",
-    # "https://tether.to/",
-    # "https://eos.io/",
-    # "https://litecoin.org/pl/",
-    # "https://www.bitcoincash.org/",
-    # "https://nchain.com/en/blog/bitcoin-sv-launch/",
-    # "https://tron.network/",
-    # "https://www.cardano.org/",
-    # "https://www.getmonero.org/",
-    # "https://www.iota.org/",
-    # "https://www.binance.com/en",
-    # "https://nem.io/",
-    # "https://www.dash.org/",
-    # "https://ethereumclassic.github.io/",
-    # "https://neo.org/",
-    # "https://z.cash/",
-    # "https://makezine.com/",
-    # "https://dogecoin.com/",
-    # "https://www.wavesproject.org/",
-    # "https://tezos.com/",
-    # "https://www.trusttoken.com/trueusd/",
-    # "https://www.circle.com/en/usdc",
-    # "https://bitcoingold.org/",
-    # "https://www.vechain.com/#/",
-    # "https://omisego.network/",
-    # "https://basicattentiontoken.org/",
-    # "https://qtum.org/en",
-    # "https://www.paxos.com/standard/",
-    # "https://www.decred.org/",
-    # "https://0x.org/",
-    # "https://lisk.io/",
-    # "https://vergecurrency.com/",
-    # "https://sia.tech/",
-    # "https://steem.com/"]
+    start_urls = ["https://bitcoin.org/",
+                  "https://ripple.com/",
+                  "https://www.ethereum.org/",
+                  "https://bitcoin.org/",
+                  "https://ripple.com/",
+                  "https://www.ethereum.org/",
+                  "https://www.stellar.org/",
+                  "https://tether.to/",
+                  "https://eos.io/",
+                  "https://litecoin.org/pl/",
+                  "https://www.bitcoincash.org/",
+                  "https://nchain.com/en/blog/bitcoin-sv-launch/",
+                  "https://tron.network/",
+                  "https://www.cardano.org/",
+                  "https://www.getmonero.org/",
+                  "https://www.iota.org/",
+                  "https://www.binance.com/en",
+                  "https://nem.io/",
+                  "https://www.dash.org/",
+                  "https://ethereumclassic.github.io/",
+                  "https://neo.org/",
+                  "https://z.cash/",
+                  "https://makezine.com/",
+                  "https://dogecoin.com/",
+                  "https://www.wavesproject.org/",
+                  "https://tezos.com/",
+                  "https://www.trusttoken.com/trueusd/",
+                  "https://www.circle.com/en/usdc",
+                  "https://bitcoingold.org/",
+                  "https://www.vechain.com/#/",
+                  "https://omisego.network/",
+                  "https://basicattentiontoken.org/",
+                  "https://qtum.org/en",
+                  "https://www.paxos.com/standard/",
+                  "https://www.decred.org/",
+                  "https://0x.org/",
+                  "https://lisk.io/",
+                  "https://vergecurrency.com/",
+                  "https://sia.tech/",
+                  "https://steem.com/"]
 
     rules = [
         Rule(
@@ -96,17 +96,23 @@ class CryptoProjectsSpider(CrawlSpider):
     ]
 
     def start_requests(self):
-        with open("visited_links.txt", "a") as visited_links:
-            urls = self.start_urls
-            for url in urls:
-                visited_links.write(url + "\n")
-                yield scrapy.Request(url=url, callback=self.parse_item)
+        with open("visited_links.csv", "a") as visited_links:
+            with open("direct_twitter_links.csv", "a") as twitter_links:
+                urls = self.start_urls
+                yield from self.process_urls(twitter_links, urls, visited_links)
 
-    def parse_item(self, response):
-        with open("visited_links.txt", "a") as visited_links:
-            link_extractor = LinkExtractor()
-            links = link_extractor.extract_links(response)
-            print(links)
-            for link in links:
-                visited_links.write(link.url + "\n")
-                yield scrapy.Request(link.url, callback=self.parse_item)
+    def process_urls(self, twitter_links, urls, visited_links):
+        for url in urls:
+            if "twitter" in url:
+                twitter_links.write(url + "\n")
+            visited_links.write(url + "\n")
+            if any(allowed_domain in url for allowed_domain in self.allowed_domains):
+                yield scrapy.Request(url=url, callback=self.parse_response)
+
+    def parse_response(self, response):
+        with open("visited_links.csv", "a") as visited_links:
+            with open("direct_twitter_links.csv", "a") as twitter_links:
+                link_extractor = LinkExtractor()
+                links = link_extractor.extract_links(response)
+                urls = [link.url for link in links]
+                yield from self.process_urls(twitter_links, urls, visited_links)

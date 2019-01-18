@@ -18,12 +18,15 @@ submissions_per_subreddit = [reddit.subreddit(subreddit).top(limit=None) for sub
 topics_dict = {"author": [],
                "title": [],
                "score": [],
+               "time": [],
                "id": [],
                "url": [],
                "comms_num": [],
                "created": [],
                "body": [],
                "comments": [],
+               "comments_scores": [],
+               "comments_times": [],
                "subreddit": []}
 
 n_sub = 0
@@ -36,6 +39,7 @@ for subreddit in submissions_per_subreddit:
         topics_dict["author"].append(submission.author)
         topics_dict["title"].append(submission.title)
         topics_dict["score"].append(submission.score)
+        topics_dict["time"].append(submission.created_utc)
         topics_dict["id"].append(submission.id)
         topics_dict["url"].append(submission.url)
         topics_dict["comms_num"].append(submission.num_comments)
@@ -52,10 +56,16 @@ for subreddit in submissions_per_subreddit:
         #         time.sleep(1)
 
         sub_comments = []
+        comments_scores = []
+        comments_times = []
         for comment in submission.comments.list():
             if isinstance(comment, Comment):
-                sub_comments.append(comment)
+                sub_comments.append(comment.body)
+                comments_scores.append(comment.score)
+                comments_times.append(comment.created_utc)
         topics_dict["comments"].append(sub_comments)
+        topics_dict["comments_scores"].append(comments_scores)
+        topics_dict["comments_times"].append(comments_times)
 
 
 topics_data = pd.DataFrame(topics_dict)
@@ -65,5 +75,5 @@ topics_data = topics_data.assign(timestamp=timestamps)
 
 topics_data.info()
 print("[INFO] Finished successfully")
-topics_data.to_csv("reddit_data_test", sep='\t')
+topics_data.to_csv("reddit_data_test_v2", sep='\t')
 

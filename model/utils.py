@@ -12,7 +12,7 @@ def split_dataset(df, test_size):
 
 def get_data_from_to(df, column_date_name, time_from, time_to):
     df[column_date_name] = pd.to_datetime(df[column_date_name])
-    mask = (df[column_date_name] > time_from) & (df[column_date_name] <= time_to)
+    mask = (df[column_date_name] > pd.Timestamp(time_from)) & (df[column_date_name] <= pd.Timestamp(time_to))
     return df.loc[mask]
 
 

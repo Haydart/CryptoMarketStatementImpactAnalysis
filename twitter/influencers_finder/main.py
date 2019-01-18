@@ -1,13 +1,12 @@
 from top_influencers import find_influencers_in_tweets, find_influencers_in_stats, find_users_tweets_and_extract_sentiments
-from CryptoStatementImpactAnalysis.twitter.data_downloader.scrapper import scrap_user
-from CryptoStatementImpactAnalysis.twitter.data_preprocessing.preprocessing import get_unique_tweets, create_datetime_sentiment_dataset
-import pandas as pd
+from twitter.data_downloader.scrapper import scrap_user
+from twitter.data_preprocessing.preprocessing import get_unique_tweets, create_datetime_sentiment_dataset
 import os
 import json
 
 
-HASHTAG = "ICO"
-DATA_DIR = "C:\\Studia\\Semestr 9\\SMA\\Crypto\\CryptoStatementImpactAnalysis\\twitter\\data\\"
+HASHTAG = "BTC"
+DATA_DIR = "..\\data\\"
 USER_STATS_FILE_PATH = DATA_DIR + HASHTAG + '\\users_stats.txt'
 
 
@@ -37,7 +36,6 @@ def get_influencers_tweets(influencers):
         influencers_tweets = find_users_tweets_and_extract_sentiments(DATA_DIR + HASHTAG, influencer)
 
         with open(DATA_DIR + HASHTAG + "\\influencers\\" + influencer + "_tweets.json", 'w') as f:
-#            for tweet in influencers_tweets:
             json.dump(influencers_tweets, f)
 
 

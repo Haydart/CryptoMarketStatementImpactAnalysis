@@ -2,7 +2,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import numpy as np
 import pandas as pd
 from datetime import timedelta
-from CryptoStatementImpactAnalysis.model.utils import get_data_from_to
+from model.utils import get_data_from_to
 
 
 def get_avg_sentiments(sentences):
@@ -24,13 +24,13 @@ def analyze_sentiment(sentence):
 def avg_sentiments_from_text_in_time(df, texts_column, date_times_column, window_size):
     dataset = pd.DataFrame(columns=["sentiment_avg", "date_time"])
     time_delta = timedelta(days=window_size)
-    start_date_time = df[date_times_column][0].date()
-    end_date_time = df[date_times_column][-1].date()
+    start_date_time = df[date_times_column].iloc[0].replace(hour=0, minute=0, second=0)
+    end_date_time = df[date_times_column].iloc[-1].replace(hour=0, minute=0, second=0)
 
     while start_date_time <= end_date_time:
         avg_sentiment = get_avg_sentiments_in_time(df, texts_column, date_times_column, start_date_time, start_date_time + time_delta)
         dataset.loc[len(dataset)] = [avg_sentiment, start_date_time]
-        start_date_time += time_delta
+        start_date_time += timedelta(minutes=1)
 
     return dataset
 

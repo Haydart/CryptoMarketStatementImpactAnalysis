@@ -1,12 +1,11 @@
 import scrapy
 from scrapy.linkextractors import LinkExtractor
-from scrapy.spiders import Rule
+from scrapy.spiders import CrawlSpider, Rule
 
 
-class CryptoProjectsSpider(scrapy.Spider):
+class CryptoProjectsSpider(CrawlSpider):
     name = 'crypto_spider'
-    allowed_domains = ["twitter.com",
-                       "bitcoin.org",
+    allowed_domains = ["bitcoin.org",
                        "ripple.co/"
                        "www.ethereum.org",
                        "bitcoin.org",
@@ -46,64 +45,64 @@ class CryptoProjectsSpider(scrapy.Spider):
                        "vergecurrency.com",
                        "sia.tech",
                        "steem.com"]
-    start_urls = ["https://bitcoin.org/",
-                  "https://ripple.com/"
-                  "https://www.ethereum.org/",
-                  "https://bitcoin.org/",
-                  "https://ripple.com/",
-                  "https://www.ethereum.org/",
-                  "https://www.stellar.org/",
-                  "https://tether.to/",
-                  "https://eos.io/",
-                  "https://litecoin.org/pl/",
-                  "https://www.bitcoincash.org/",
-                  "https://nchain.com/en/blog/bitcoin-sv-launch/",
-                  "https://tron.network/",
-                  "https://www.cardano.org/",
-                  "https://www.getmonero.org/",
-                  "https://www.iota.org/",
-                  "https://www.binance.com/en",
-                  "https://nem.io/",
-                  "https://www.dash.org/",
-                  "https://ethereumclassic.github.io/",
-                  "https://neo.org/",
-                  "https://z.cash/",
-                  "https://makezine.com/",
-                  "https://dogecoin.com/",
-                  "https://www.wavesproject.org/",
-                  "https://tezos.com/",
-                  "https://www.trusttoken.com/trueusd/",
-                  "https://www.circle.com/en/usdc",
-                  "https://bitcoingold.org/",
-                  "https://www.vechain.com/#/",
-                  "https://omisego.network/",
-                  "https://basicattentiontoken.org/",
-                  "https://qtum.org/en",
-                  "https://www.paxos.com/standard/",
-                  "https://www.decred.org/",
-                  "https://0x.org/",
-                  "https://lisk.io/",
-                  "https://vergecurrency.com/",
-                  "https://sia.tech/",
-                  "https://steem.com/"]
+    start_urls = ["https://bitcoin.org/"]
+
+    # "https://ripple.com/"
+    # "https://www.ethereum.org/",
+    # "https://bitcoin.org/",
+    # "https://ripple.com/",
+    # "https://www.ethereum.org/",
+    # "https://www.stellar.org/",
+    # "https://tether.to/",
+    # "https://eos.io/",
+    # "https://litecoin.org/pl/",
+    # "https://www.bitcoincash.org/",
+    # "https://nchain.com/en/blog/bitcoin-sv-launch/",
+    # "https://tron.network/",
+    # "https://www.cardano.org/",
+    # "https://www.getmonero.org/",
+    # "https://www.iota.org/",
+    # "https://www.binance.com/en",
+    # "https://nem.io/",
+    # "https://www.dash.org/",
+    # "https://ethereumclassic.github.io/",
+    # "https://neo.org/",
+    # "https://z.cash/",
+    # "https://makezine.com/",
+    # "https://dogecoin.com/",
+    # "https://www.wavesproject.org/",
+    # "https://tezos.com/",
+    # "https://www.trusttoken.com/trueusd/",
+    # "https://www.circle.com/en/usdc",
+    # "https://bitcoingold.org/",
+    # "https://www.vechain.com/#/",
+    # "https://omisego.network/",
+    # "https://basicattentiontoken.org/",
+    # "https://qtum.org/en",
+    # "https://www.paxos.com/standard/",
+    # "https://www.decred.org/",
+    # "https://0x.org/",
+    # "https://lisk.io/",
+    # "https://vergecurrency.com/",
+    # "https://sia.tech/",
+    # "https://steem.com/"]
 
     rules = [
-        Rule(
-            LinkExtractor(unique=True),
-            follow=True,
-            callback="parse_items"
-        )
+        Rule(LinkExtractor(allow=allowed_domains, unique=True))
     ]
 
     def start_requests(self):
-        urls = self.start_urls
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+        with open("visited_links.txt", "a") as visited_links:
+            urls = self.start_urls
+            for url in urls:
+                visited_links.write(url + "\n")
+                yield scrapy.Request(url=url, callback=self.parse_item)
 
-    def parse(self, response):
-        with
-
-        link_extractor = LinkExtractor(unique=True)
-        for link in link_extractor.extract_links(response):
-            if "twitter" in link.url:
-                print(link)
+    def parse_item(self, response):
+        with open("visited_links.txt", "a") as visited_links:
+            link_extractor = LinkExtractor()
+            links = link_extractor.extract_links(response)
+            print(links)
+            for link in links:
+                visited_links.write(link.url + "\n")
+                yield scrapy.Request(link.url, callback=self.parse_item)

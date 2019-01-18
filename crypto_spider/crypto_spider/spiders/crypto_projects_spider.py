@@ -5,8 +5,8 @@ from scrapy.spiders import CrawlSpider, Rule
 
 class CryptoProjectsSpider(CrawlSpider):
     name = 'crypto_spider'
-    allowed_domains = ["bitcoin.org",
-                       "ripple.co/"
+    allowed_domains = ["bitcoin.org/en",
+                       "ripple.com"
                        "www.ethereum.org",
                        "bitcoin.org",
                        "ripple.com",
@@ -21,7 +21,7 @@ class CryptoProjectsSpider(CrawlSpider):
                        "www.cardano.org",
                        "www.getmonero.org",
                        "www.iota.org",
-                       "www.binance.com/e",
+                       "www.binance.com/en",
                        "nem.io",
                        "www.dash.org",
                        "ethereumclassic.github.io",
@@ -88,7 +88,11 @@ class CryptoProjectsSpider(CrawlSpider):
     # "https://steem.com/"]
 
     rules = [
-        Rule(LinkExtractor(allow=allowed_domains, unique=True))
+        Rule(
+            LinkExtractor(
+                allow=allowed_domains, unique=True
+            )
+        )
     ]
 
     def start_requests(self):

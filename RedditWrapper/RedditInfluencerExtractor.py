@@ -1,8 +1,6 @@
-import pandas as pd
-import numpy as np
-import io
 from ast import literal_eval
-from praw.models import Comment
+
+import pandas as pd
 
 
 def check_author(redditors, author):
@@ -53,11 +51,10 @@ columns = ['name',
            'crypto_threads_comments_count',
            'influencer_score']
 
-
 dtype = dict(zip(columns, [str, int, int, int, int, int, int, float]))
 
 reddit_data = pd.read_csv("reddit_data", sep='\t')
-#pd.eval(reddit_data['comments'])
+# pd.eval(reddit_data['comments'])
 
 redditors = pd.DataFrame(columns=columns)
 redditors.set_index('name', inplace=True)

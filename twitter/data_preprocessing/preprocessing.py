@@ -56,8 +56,6 @@ def create_datetime_sentiment_for_file(file, date_format, window_size):
 # window_time - now in days
 def create_datetime_sentiment_dataset(data_path, window_size):
     date_format = "%Y-%m-%d %H:%M:%S"
-    files = glob.glob(data_path + "/*.json")
-    for file in files:
-        dataset = create_datetime_sentiment_for_file(file, date_format, window_size)
-        dataset.to_csv(file + "_sentiments-2h.csv")
-        print("saved")
+    dataset = create_datetime_sentiment_for_file(data_path, date_format, window_size)
+    dataset.to_csv(data_path + "_sentiments-2h.csv")
+    print("saved")

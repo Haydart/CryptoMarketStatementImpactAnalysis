@@ -3,7 +3,7 @@ from keras.layers import Dense, LSTM
 from utils import split, merge_datasets_by_date
 from preprocessing import normalize_array, get_sentiments_prices
 from crypto.data_loader.loader import load_crypto_data, get_avg_open_close
-from twitter.data_loader.loader import load_sentiment_time_data
+from twitter.data_loader.loader import load_sentiment_time_data, load_tweets
 import numpy as np
 
 
@@ -12,7 +12,7 @@ batch_size = 50
 look_back = 1
 
 
-twitter_data = load_sentiment_time_data("C:\\STUDIA\\Analiza-mediow-spolecznosciowych\\Crypto\\CryptoStatementImpactAnalysis\\twitter\\data\\BTC\\influencers\\BMouler.json_sentiments-2h.csv")
+twitter_data = load_tweets("C:\\STUDIA\\Analiza-mediow-spolecznosciowych\\Crypto\\CryptoStatementImpactAnalysis\\twitter\\data\\tweets_all.json")
 crypto_dataset = load_crypto_data("C:\STUDIA\Analiza-mediow-spolecznosciowych\Crypto\CryptoStatementImpactAnalysis\crypto\data\BTC-USD_2015-2018_1min\gemini_BTCUSD_2015_1min.csv")
 crypto_dataset = get_avg_open_close(crypto_dataset, "Date")
 

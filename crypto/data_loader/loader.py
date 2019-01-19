@@ -1,10 +1,6 @@
 import pandas as pd
 import numpy as np
 from datetime import timedelta
-from utils import get_data_from_to
-
-
-FILE_PATH = "data/BTC-USD_2015-2018_1min/gemini_BTCUSD_2015_1min.csv"
 
 
 def load_crypto_data(file_path):

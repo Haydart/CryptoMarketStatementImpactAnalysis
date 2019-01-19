@@ -21,7 +21,7 @@ def handle_submission(redditors, submission):
 
 
 def handle_comments(redditors, comments):
-    comments = literal_eval(comments)
+#    comments = literal_eval(comments)
     for comment in comments:
         comment_author = comment.author
         check_author(redditors, comment_author)
@@ -68,3 +68,5 @@ reddit_data.apply(update_redditors, axis='columns', args=(redditors,))
 reddit_data.apply(calculate_influencer_score, axis='columns')
 
 print(redditors.head())
+
+redditors.to_csv("reddit_extracted_influencers", sep=',')

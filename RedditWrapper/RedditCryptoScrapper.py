@@ -25,8 +25,6 @@ topics_dict = {"author": [],
                "created": [],
                "body": [],
                "comments": [],
-               "comments_scores": [],
-               "comments_times": [],
                "subreddit": []}
 
 n_sub = 0
@@ -54,18 +52,13 @@ for subreddit in submissions_per_subreddit:
         #         done_replaces = done_replaces + 1
         #     except Exception:
         #         time.sleep(1)
+        comments = []
 
-        sub_comments = []
-        comments_scores = []
-        comments_times = []
         for comment in submission.comments.list():
             if isinstance(comment, Comment):
-                sub_comments.append(comment.body)
-                comments_scores.append(comment.score)
-                comments_times.append(comment.created_utc)
-        topics_dict["comments"].append(sub_comments)
-        topics_dict["comments_scores"].append(comments_scores)
-        topics_dict["comments_times"].append(comments_times)
+                comments.append([comment.author, comment.created_utc, comment.score, comment.body])
+
+        topics_dict["comments"].append(comments)
 
 
 topics_data = pd.DataFrame(topics_dict)
@@ -75,5 +68,5 @@ topics_data = topics_data.assign(timestamp=timestamps)
 
 topics_data.info()
 print("[INFO] Finished successfully")
-topics_data.to_csv("reddit_data_test_v2", sep='\t')
+topics_data.to_csv("reddit_data_test_v3", sep='\t')
 

@@ -1,32 +1,43 @@
 from keras.models import Sequential
 from keras.layers import Dense, LSTM
-from utils import create_dataset, split_dataset, normalize_dataset
+from utils import split, merge_datasets_by_date
+from preprocessing import normalize_array, get_sentiments_prices
+from crypto.data_loader.loader import load_crypto_data, get_avg_open_close
+from twitter.data_loader.loader import load_sentiment_time_data
 import numpy as np
 
 
 hidden_size = 4
 batch_size = 50
+look_back = 1
+
+
+twitter_data = load_sentiment_time_data("C:\\STUDIA\\Analiza-mediow-spolecznosciowych\\Crypto\\CryptoStatementImpactAnalysis\\twitter\\data\\BTC\\influencers\\BMouler.json_sentiments-2h.csv")
+crypto_dataset = load_crypto_data("C:\STUDIA\Analiza-mediow-spolecznosciowych\Crypto\CryptoStatementImpactAnalysis\crypto\data\BTC-USD_2015-2018_1min\gemini_BTCUSD_2015_1min.csv")
+crypto_dataset = get_avg_open_close(crypto_dataset, "Date")
+
+dataset = merge_datasets_by_date(crypto_dataset, twitter_data, "datetime")
 
 # normalize the dataset
-dataset = normalize_dataset(dataset)
+dataset = get_sentiments_prices(dataset['sentiment_avg'], dataset['price_avg'], look_back)
+#dataset2 = normalize_array(dataset)
+
+sentiments = dataset[0]
+prices = dataset[1]
 
 # split into train and test sets
-train, test = split_dataset(dataset, 0.2)
-
-# reshape into X=t and Y=t+1
-look_back = 1
-trainX, trainY = create_dataset(train, look_back)
-testX, testY = create_dataset(test, look_back)
+train_x, test_x = split(sentiments)
+train_y, test_y = split(prices)
 
 # reshape input to be [samples, time steps, features]
-trainX = np.reshape(trainX, (trainX.shape[0], look_back, trainX.shape[1]))
-testX = np.reshape(testX, (testX.shape[0], look_back, testX.shape[1]))
+train_x = np.reshape(train_x, (train_x.shape[0], look_back, train_x.shape[1]))
+test_x = np.reshape(test_x, (test_x.shape[0], look_back, test_x.shape[1]))
 
 # create and fit the LSTM network
 model = Sequential()
 model.add(LSTM(hidden_size, input_shape=(1, look_back), dropout=0.2))
 model.add(Dense(1))
 model.compile(loss='mean_squared_error', optimizer='adam')
-model.fit(trainX, trainY, epochs=100, batch_size=batch_size)
+model.fit(train_x, train_y, epochs=100, batch_size=batch_size)
 
-y_pred = model.predict(testX)
+y_pred = model.predict(test_x)

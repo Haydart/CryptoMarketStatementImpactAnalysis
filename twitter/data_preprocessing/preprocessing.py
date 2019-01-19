@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import re
 from datetime import datetime
-from CryptoStatementImpactAnalysis.model.utils import avg_sentiments_from_text_in_time
+from sentiment_analyzer import avg_sentiments_from_text_in_time
 
 
 def file_to_dataframe(file_path):
@@ -55,11 +55,9 @@ def create_datetime_sentiment_for_file(file, date_format, window_size):
 
 # window_time - now in days
 def create_datetime_sentiment_dataset(data_path, window_size):
-    dataset = pd.DataFrame(columns=["sentiment_avg", "date_time"])
     date_format = "%Y-%m-%d %H:%M:%S"
     files = glob.glob(data_path + "/*.json")
     for file in files:
-        dataset.loc[len(dataset)] = create_datetime_sentiment_for_file(file, date_format, window_size)
-    return dataset
-
-
+        dataset = create_datetime_sentiment_for_file(file, date_format, window_size)
+        dataset.to_csv(file + "_sentiments-2h.csv")
+        print("saved")

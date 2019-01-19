@@ -59,5 +59,5 @@ def create_datetime_sentiment_dataset(data_path, window_size):
     files = glob.glob(data_path + "/*.json")
     for file in files:
         dataset = create_datetime_sentiment_for_file(file, date_format, window_size)
-        dataset.to_csv(file + "_sentiments.csv")
+        dataset.to_csv(file + "_sentiments-2h.csv")
         print("saved")

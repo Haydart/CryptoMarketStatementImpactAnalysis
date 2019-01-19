@@ -1,12 +1,21 @@
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import pandas as pd
+import numpy as np
 
 
 # test_size: should be float [0.0, 1.0] - the proportion of the dataset to include in the test split.
 # or int - the absolute number of test samples.
-def split_dataset(df, test_size):
-    train, test = train_test_split(df, test_size=test_size)
+def shuffle_data(x, y):
+    s = np.arange(x.shape[0])
+    np.random.shuffle(s)
+    return x[s], y[s]
+
+
+def split(x):
+    train_size = int(len(x) * 0.8)
+    train = x[0:train_size]
+    test = x[train_size:]
     return train, test
 
 

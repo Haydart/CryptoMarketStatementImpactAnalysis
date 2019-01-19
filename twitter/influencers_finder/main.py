@@ -1,20 +1,20 @@
 from top_influencers import find_influencers_in_tweets, find_influencers_in_stats, find_users_tweets_and_extract_sentiments
-from twitter.data_downloader.scrapper import scrap_user
+# from twitter.data_downloader.scrapper import scrap_user
 from twitter.data_preprocessing.preprocessing import get_unique_tweets, create_datetime_sentiment_dataset
 import os
 import json
 
 
-HASHTAG = "bitcoin"
+HASHTAG = "BTC"
 DATA_DIR = "..\\data\\"
 USER_STATS_FILE_PATH = DATA_DIR + HASHTAG + '\\users_stats.txt'
 
 
-def get_user_stats(files, number):
-    top_users = list(find_influencers_in_tweets(files, number)['username'])
-    print(top_users)
-    for idx in range(0, number):
-        scrap_user(top_users[idx], USER_STATS_FILE_PATH)
+# def get_user_stats(files, number):
+#     top_users = list(find_influencers_in_tweets(files, number)['username'])
+#     print(top_users)
+#     for idx in range(0, number):
+#         scrap_user(top_users[idx], USER_STATS_FILE_PATH)
 
 
 def get_top_influencers(number):
@@ -42,4 +42,4 @@ def get_influencers_tweets(influencers):
 # get_user_stats(DATA_DIR + HASHTAG, 100)
 # influencers = get_top_influencers(10)
 # get_influencers_tweets(influencers)
-create_datetime_sentiment_dataset(DATA_DIR + HASHTAG + "\\influencers", 1)
+create_datetime_sentiment_dataset(DATA_DIR + HASHTAG + "\\influencers", 2)

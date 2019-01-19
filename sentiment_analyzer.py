@@ -30,8 +30,7 @@ def avg_sentiments_from_text_in_time(df, texts_column, date_times_column, window
     while start_date_time <= end_date_time:
         avg_sentiment = get_avg_sentiments_in_time(df, texts_column, date_times_column, start_date_time, start_date_time + time_delta)
         dataset.loc[len(dataset)] = [avg_sentiment, start_date_time]
-        start_date_time += timedelta(minutes=1)
-
+        start_date_time += timedelta(minutes=15)
     return dataset
 
 

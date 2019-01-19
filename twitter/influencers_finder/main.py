@@ -5,7 +5,7 @@ import os
 import json
 
 
-HASHTAG = "BTC"
+HASHTAG = "bitcoin"
 DATA_DIR = "..\\data\\"
 USER_STATS_FILE_PATH = DATA_DIR + HASHTAG + '\\users_stats.txt'
 

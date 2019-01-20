@@ -13,59 +13,43 @@ df_twitter = load_tweets(".//twitter//data//tweets_all.json")
 df_crypto = load_crypto_data(".//crypto//data//BTC-USD_2015-2018_1min")
 
 
-def create_dataset(df_twitter, df_reddit, df_coin, time_window_min):
-    dataset = pd.DataFrame(columns=["twitter_sentiments", "coin_price", "datetime"])
+def create_dataset(df_coin, df_twitter, df_reddit, window_width):
+    dataset = pd.DataFrame(columns=["twitter_sentiments", "reddit_sentiments", "coin_price", "datetime"])
 
-    df_twitter["datetime"] = [datetime.strptime(row["date"] + " " + row["time"], "%Y-%m-%d %H:%M:%S") for _, row in df_twitter.iterrows()]
- #   df_reddit["datetime"] = pd.to_datetime(df_reddit["datetime"])
     df_coin["datetime"] = pd.to_datetime(df_coin["Date"])
+    df_twitter["datetime"] = [datetime.strptime(row["date"] + " " + row["time"], "%Y-%m-%d %H:%M:%S") for _, row in df_twitter.iterrows()]
+    df_reddit["datetime"] = pd.to_datetime(df_reddit["datetime"])
 
-    df_twitter = sort_by_date(df_twitter)
-#    df_reddit = sort_by_date(df_reddit)
     df_coin = sort_by_date(df_coin)
+    df_twitter = sort_by_date(df_twitter)
+    df_reddit = sort_by_date(df_reddit)
 
-    window_time = timedelta(minutes=time_window_min)
-    start_date = find_start_date(df_twitter, df_coin).replace(second=0)
-    end_date = find_end_date(df_twitter, df_coin).replace(second=0)
+    coin_idx, twitter_idx, reddit_idx, window_start = find_start_date_idxs(df_coin, df_twitter, df_reddit)
+    window_time = timedelta(minutes=window_width)
 
-    df_twitter = get_data_from_to(df_twitter, "datetime", start_date, end_date)
-    df_coin = get_data_from_to(df_coin, "datetime", start_date, end_date)
-
-    start_date2 = find_start_date(df_twitter, df_coin).replace(second=0)
-    while start_date2 != start_date:
-        df_twitter = get_data_from_to(df_twitter, "datetime", start_date2, end_date)
-        df_coin = get_data_from_to(df_coin, "datetime", start_date2, end_date)
-        start_date = start_date2
-        start_date2 = find_start_date(df_twitter, df_coin).replace(second=0)
-
-
-    while start_date <= end_date:
-        start = start_date
+    while coin_idx < len(df_coin) and twitter_idx < len(df_twitter) and reddit_idx < len(df_reddit):
         tweets = []
         reddits = []
         coins_prices = []
 
-        end = start + window_time
-        while start < end:
-            for _, tweet in df_twitter.iterrows():
-                if tweet["datetime"] < end:
-                    tweets.append(tweet["tweet"])
-                else:
-                    break
+        while df_coin["datetime"].iloc[coin_idx] <= window_start + window_time:
+            coins_prices.append(np.mean([df_coin["Open"].iloc[coin_idx], df_coin["Close"].iloc[coin_idx]]))
+            coin_idx += 1
 
-            for _, coin in df_coin.iterrows():
-                if coin["datetime"] < end:
-                    coins_prices.append(np.mean([coin["Open"], coin["Close"]]))
-                else:
-                    start += window_time
-                    break
+        while df_twitter["datetime"].iloc[twitter_idx] <= window_start + window_time:
+            tweets.append(df_twitter["tweet"].iloc[twitter_idx])
+            twitter_idx += 1
 
-        tweets_sentiment_avg = get_avg_sentiments(tweets)
- #       reddits_sentiment_avg = get_avg_sentiments(reddits)
+        while df_reddit["datetime"].iloc[reddit_idx] <= window_start + window_time:
+            reddits.append(df_reddit["text"].iloc[reddit_idx])
+            reddit_idx += 1
+
         coins_prices_avg = np.mean(coins_prices)
+        tweets_sentiment_avg = get_avg_sentiments(tweets)
+        reddits_sentiment_avg = get_avg_sentiments(reddits)
 
-        dataset.loc[len(dataset)] = [tweets_sentiment_avg, coins_prices_avg, start_date]
-        start_date += window_time
+        dataset.loc[len(dataset)] = [tweets_sentiment_avg, reddits_sentiment_avg, coins_prices_avg, window_start]
+        window_start += window_time
 
     dataset.to_csv("dataset.csv")
     print("Saved")
@@ -73,11 +57,40 @@ def create_dataset(df_twitter, df_reddit, df_coin, time_window_min):
     return dataset
 
 
-def find_start_date(df_twitter, df_coin):
-    start_date_coins = df_coin["datetime"].iloc[0]
-    start_date_sm = df_twitter["datetime"].iloc[0]
-#    start_date_sm = min(df_twitter["datetime"].iloc[0], df_reddit["datetime"].iloc[0])
-    return max(start_date_coins, start_date_sm)
+def find_start_date_idxs(df_coin, df_twitter, df_reddit):
+    start_date_coins = df_coin["datetime"].iloc[0].replace(second=0)
+    start_date_twitter = df_twitter["datetime"].iloc[0].replace(second=0)
+    start_date_reddit = df_reddit["datetime"].iloc[0].replace(second=0)
+
+    coin_idx = 0
+    twitter_idx = 0
+    reddit_idx = 0
+
+    if max(start_date_coins, start_date_twitter, start_date_reddit) == start_date_coins:
+        start_date = start_date_coins
+        while df_twitter["datetime"].iloc[twitter_idx + 1] < start_date_coins:
+            twitter_idx += 1
+        while df_reddit["datetime"].iloc[reddit_idx + 1] < start_date_coins:
+            reddit_idx += 1
+
+    elif max(start_date_coins, start_date_twitter, start_date_reddit) == start_date_twitter:
+        start_date = start_date_twitter
+        while df_coin["datetime"].iloc[coin_idx + 1] < start_date_twitter:
+            coin_idx += 1
+        while df_reddit["datetime"].iloc[reddit_idx + 1] < start_date_twitter:
+            reddit_idx += 1
+
+    elif max(start_date_coins, start_date_twitter, start_date_reddit) == start_date_reddit:
+        start_date = start_date_reddit
+        while df_coin["datetime"].iloc[coin_idx + 1] < start_date_reddit:
+            coin_idx += 1
+        while df_twitter["datetime"].iloc[twitter_idx + 1] < start_date_reddit:
+            twitter_idx += 1
+
+    return coin_idx, twitter_idx, reddit_idx, start_date
+
+
+
 
 
 def find_end_date(df_twitter, df_coin):
@@ -92,7 +105,7 @@ def sort_by_date(df):
 
 
 def train_and_test(look_back, hidden_size, batch_size, epochs, dropout):
-    dataset = create_dataset(df_twitter, None, df_crypto, 1)
+    dataset = create_dataset(df_crypto, df_twitter, None, 1)
     x, y = get_sentiments_prices(dataset['twitter_sentiments'], dataset["coin_price"], look_back)
     x = normalize_array(x)
 

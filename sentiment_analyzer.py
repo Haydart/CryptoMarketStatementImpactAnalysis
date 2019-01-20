@@ -6,6 +6,8 @@ from utils import get_data_from_to
 
 
 def get_avg_sentiments(sentences):
+    if len(sentences) == 0:
+        return 0
     return np.mean(analyze_sentiments(sentences))
 
 

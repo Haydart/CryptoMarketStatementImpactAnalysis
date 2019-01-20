@@ -1,5 +1,7 @@
 from keras.models import Sequential
 from keras.layers import Dense, LSTM
+from sklearn.metrics import mean_squared_error
+import math
 
 
 def create_model(hidden_size, look_back, dropout):
@@ -21,7 +23,9 @@ def test(model, test_x):
 
 
 def evaluate(y_true, y_pred):
-    pass
+    score = math.sqrt(mean_squared_error(y_true, y_pred))
+    return score
+
 
 
 

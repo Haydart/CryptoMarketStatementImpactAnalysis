@@ -6,22 +6,12 @@ import numpy as np
 
 # test_size: should be float [0.0, 1.0] - the proportion of the dataset to include in the test split.
 # or int - the absolute number of test samples.
-def shuffle_data(x, y):
-    s = np.arange(x.shape[0])
-    np.random.shuffle(s)
-    return x[s], y[s]
 
-
-def split(x):
-    train_size = int(len(x) * 0.8)
-    train = x[0:train_size]
-    test = x[train_size:]
-    return train, test
 
 
 def get_data_from_to(df, column_date_name, time_from, time_to):
     df[column_date_name] = pd.to_datetime(df[column_date_name])
-    mask = (df[column_date_name] > pd.Timestamp(time_from)) & (df[column_date_name] <= pd.Timestamp(time_to))
+    mask = (df[column_date_name] >= pd.Timestamp(time_from)) & (df[column_date_name] <= pd.Timestamp(time_to))
     return df.loc[mask]
 
 

@@ -17,11 +17,12 @@ def run_expreminent(look_back, hidden_size, batch_size, epochs, dropout):
     df_crypto, df_twitter, df_reddit = load_datasets()
     dataset = create_dataset(df_crypto, df_twitter, df_reddit, 1)
     x, y = get_sentiments_prices(dataset['twitter_sentiments'], dataset["reddit_sentiments"], dataset["coin_price"], look_back)
-    x = normalize_array(x)
+    for i in x.shape[0]:
+        x[i] = normalize_array(x[i])
 
     # split into train and test sets
-    train_x, train_y = split(x)
-    test_x, test_y = split(y)
+    train_x, test_x = split(x)
+    train_y, test_y = split(y)
 
     train_x = np.reshape(train_x, (train_x.shape[0], look_back, train_x.shape[1]))
     test_x = np.reshape(test_x, (test_x.shape[0], look_back, test_x.shape[1]))

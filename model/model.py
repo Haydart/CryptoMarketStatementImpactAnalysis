@@ -1,32 +1,36 @@
 from keras.models import Sequential
-from keras.layers import Dense, LSTM
-from utils import create_dataset, split_dataset, normalize_dataset
-import numpy as np
+from keras.layers import Dense, LSTM, Dropout
+from sklearn.metrics import mean_squared_error
+import keras
+import tensorflow
+import math
 
 
-hidden_size = 4
-batch_size = 50
+def create_model(hidden_size, look_forward, dropout):
+    model = Sequential()
+    model.add(LSTM(hidden_size, return_sequences=True, input_shape=(look_forward, 3)))
+    model.add(Dropout(dropout))
+    model.add(Dense(1))
+    return model
 
-# normalize the dataset
-dataset = normalize_dataset(dataset)
 
-# split into train and test sets
-train, test = split_dataset(dataset, 0.2)
+def train(model, train_x, train_y, batch_size, epochs):
+    model.compile(loss='mean_squared_error', optimizer='adam')
+    model.fit(x=train_x, y=train_y, epochs=epochs, batch_size=batch_size)
+    return model
 
-# reshape into X=t and Y=t+1
-look_back = 1
-trainX, trainY = create_dataset(train, look_back)
-testX, testY = create_dataset(test, look_back)
 
-# reshape input to be [samples, time steps, features]
-trainX = np.reshape(trainX, (trainX.shape[0], look_back, trainX.shape[1]))
-testX = np.reshape(testX, (testX.shape[0], look_back, testX.shape[1]))
+def test(model, test_x):
+    y_pred = model.predict(test_x)
+    return y_pred
 
-# create and fit the LSTM network
-model = Sequential()
-model.add(LSTM(hidden_size, input_shape=(1, look_back), dropout=0.2))
-model.add(Dense(1))
-model.compile(loss='mean_squared_error', optimizer='adam')
-model.fit(trainX, trainY, epochs=100, batch_size=batch_size)
 
-y_pred = model.predict(testX)
+def evaluate(y_true, y_pred):
+    score = math.sqrt(mean_squared_error(y_true, y_pred))
+    return score
+
+
+
+
+
+

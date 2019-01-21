@@ -14,10 +14,12 @@ def load_datasets():
     return df_crypto, df_twitter, df_reddit
 
 
-def run_expreminent(look_back, hidden_size, batch_size, epochs, dropout):
-    df_crypto, df_twitter, df_reddit = load_datasets()
-    dataset = create_dataset(df_crypto, df_twitter, df_reddit, 1)
+def run_expreminent(look_back, hidden_size, batch_size, epochs, dropout, dataset):
+  #  df_crypto, df_twitter, df_reddit = load_datasets()
+ #   dataset = create_dataset(df_crypto, df_twitter, df_reddit, window_size, file_name)
     x, y = get_sentiments_prices(dataset['twitter_sentiments'], dataset["reddit_sentiments"], dataset["coin_price"], look_back)
+    print("\n\n" + x)
+    print(y)
     for i in x.shape[0]:
         x[i] = normalize_array(x[i])
 
@@ -34,3 +36,11 @@ def run_expreminent(look_back, hidden_size, batch_size, epochs, dropout):
     score = evaluate(test_y, y_pred)
     print('Test Score: %.2f RMSE' % (score))
     return score
+
+
+df_crypto, df_twitter, df_reddit = load_datasets()
+#create_dataset(df_crypto, df_twitter, df_reddit, 720, "window-720.csv")
+dataset = create_dataset(df_crypto, df_twitter, df_reddit, 1, "window-1.csv")
+
+
+run_expreminent(look_back=1, hidden_size=4, batch_size=50, epochs=100, dropout=0.2, dataset=dataset)

@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 
-def create_dataset(df_coin, df_twitter, df_reddit, window_width):
+def create_dataset(df_coin, df_twitter, df_reddit, window_width, filename):
     dataset = pd.DataFrame(columns=["twitter_sentiments", "reddit_sentiments", "coin_price", "datetime"])
     df_coin["datetime"] = pd.to_datetime(df_coin["Date"])
     df_twitter["datetime"] = [datetime.strptime(row["date"] + " " + row["time"], "%Y-%m-%d %H:%M:%S") for _, row in df_twitter.iterrows()]
@@ -18,20 +18,20 @@ def create_dataset(df_coin, df_twitter, df_reddit, window_width):
     window_time = timedelta(minutes=window_width)
 
     while coin_idx < len(df_coin) and twitter_idx < len(df_twitter) and reddit_idx < len(df_reddit):
+        print(window_start)
         tweets = []
         reddits = []
         coins_prices = []
 
-        while df_coin["datetime"].iloc[coin_idx] <= window_start + window_time:
+        while coin_idx < len(df_coin) and df_coin["datetime"].iloc[coin_idx] <= window_start + window_time:
             coins_prices.append(np.mean([df_coin["Open"].iloc[coin_idx], df_coin["Close"].iloc[coin_idx]]))
             coin_idx += 1
 
-        while df_twitter["datetime"].iloc[twitter_idx] <= window_start + window_time:
+        while twitter_idx < len(df_twitter) and df_twitter["datetime"].iloc[twitter_idx] <= window_start + window_time:
             tweets.append(df_twitter["tweet"].iloc[twitter_idx])
-            tmp = df_twitter["datetime"].iloc[twitter_idx]
             twitter_idx += 1
 
-        while df_reddit["datetime"].iloc[reddit_idx] <= window_start + window_time:
+        while reddit_idx < len(df_reddit) and df_reddit["datetime"].iloc[reddit_idx] <= window_start + window_time:
             reddits.append(df_reddit["text"].iloc[reddit_idx])
             reddit_idx += 1
 
@@ -42,7 +42,7 @@ def create_dataset(df_coin, df_twitter, df_reddit, window_width):
         dataset.loc[len(dataset)] = [tweets_sentiment_avg, reddits_sentiment_avg, coins_prices_avg, window_start]
         window_start += window_time
 
-    dataset.to_csv("dataset.csv")
+    dataset.to_csv(filename)
     print("Saved")
     print(dataset.head())
     return dataset

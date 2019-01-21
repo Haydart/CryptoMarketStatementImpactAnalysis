@@ -1,5 +1,6 @@
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import numpy as np
+import math
 
 
 def get_avg_sentiments(sentences):
@@ -10,8 +11,7 @@ def get_avg_sentiments(sentences):
 
 def analyze_sentiments(sentences):
     analyzer = SentimentIntensityAnalyzer()
-    sentiments = []
-    [sentiments.append(analyzer.polarity_scores(s)['compound']) for s in sentences]
+    sentiments = [0 if str(s) == 'nan' else analyzer.polarity_scores(s)['compound'] for s in sentences]
     return sentiments
 
 

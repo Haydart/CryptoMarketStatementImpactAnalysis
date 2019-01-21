@@ -3,13 +3,14 @@ from model.model import create_model, train, test, evaluate
 from main import create_dataset
 from twitter.data_loader.loader import load_tweets
 from crypto.data_loader.loader import load_crypto_data
+from RedditWrapper.data_loader import load_reddit_data
 import numpy as np
 
 
 def load_datasets():
-    df_twitter = load_tweets(".//twitter//data//tweets_all.json")
-    df_reddit = None
-    df_crypto = load_crypto_data(".//crypto//data//BTC-USD_2015-2018_1min")
+    df_twitter = load_tweets("..//twitter//data//tweets_all.json")
+    df_reddit = load_reddit_data("..//RedditWrapper//prepared_reddit_data.csv")
+    df_crypto = load_crypto_data("..//crypto//data//BTC-USD_2015-2018_1min")
     return df_crypto, df_twitter, df_reddit
 
 

@@ -6,10 +6,9 @@ import numpy as np
 
 def create_dataset(df_coin, df_twitter, df_reddit, window_width):
     dataset = pd.DataFrame(columns=["twitter_sentiments", "reddit_sentiments", "coin_price", "datetime"])
-
     df_coin["datetime"] = pd.to_datetime(df_coin["Date"])
     df_twitter["datetime"] = [datetime.strptime(row["date"] + " " + row["time"], "%Y-%m-%d %H:%M:%S") for _, row in df_twitter.iterrows()]
-    df_reddit["datetime"] = pd.to_datetime(df_reddit["datetime"])
+    df_reddit["datetime"] = pd.to_datetime(df_reddit["timestamp"], unit='s')
 
     df_coin = sort_by_date(df_coin)
     df_twitter = sort_by_date(df_twitter)
@@ -29,6 +28,7 @@ def create_dataset(df_coin, df_twitter, df_reddit, window_width):
 
         while df_twitter["datetime"].iloc[twitter_idx] <= window_start + window_time:
             tweets.append(df_twitter["tweet"].iloc[twitter_idx])
+            tmp = df_twitter["datetime"].iloc[twitter_idx]
             twitter_idx += 1
 
         while df_reddit["datetime"].iloc[reddit_idx] <= window_start + window_time:
@@ -59,23 +59,23 @@ def find_start_date_idxs(df_coin, df_twitter, df_reddit):
 
     if max(start_date_coins, start_date_twitter, start_date_reddit) == start_date_coins:
         start_date = start_date_coins
-        while df_twitter["datetime"].iloc[twitter_idx + 1] < start_date_coins:
+        while df_twitter["datetime"].iloc[twitter_idx] < start_date_coins:
             twitter_idx += 1
-        while df_reddit["datetime"].iloc[reddit_idx + 1] < start_date_coins:
+        while df_reddit["datetime"].iloc[reddit_idx] < start_date_coins:
             reddit_idx += 1
 
     elif max(start_date_coins, start_date_twitter, start_date_reddit) == start_date_twitter:
         start_date = start_date_twitter
-        while df_coin["datetime"].iloc[coin_idx + 1] < start_date_twitter:
+        while df_coin["datetime"].iloc[coin_idx] < start_date_twitter:
             coin_idx += 1
-        while df_reddit["datetime"].iloc[reddit_idx + 1] < start_date_twitter:
+        while df_reddit["datetime"].iloc[reddit_idx] < start_date_twitter:
             reddit_idx += 1
 
     elif max(start_date_coins, start_date_twitter, start_date_reddit) == start_date_reddit:
         start_date = start_date_reddit
-        while df_coin["datetime"].iloc[coin_idx + 1] < start_date_reddit:
+        while df_coin["datetime"].iloc[coin_idx] < start_date_reddit:
             coin_idx += 1
-        while df_twitter["datetime"].iloc[twitter_idx + 1] < start_date_reddit:
+        while df_twitter["datetime"].iloc[twitter_idx] < start_date_reddit:
             twitter_idx += 1
 
     return coin_idx, twitter_idx, reddit_idx, start_date

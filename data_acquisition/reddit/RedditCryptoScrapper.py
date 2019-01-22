@@ -1,6 +1,7 @@
-import praw
-import pandas as pd
 import datetime
+
+import pandas as pd
+import praw
 from praw.models import Comment
 
 considered_subreddits = ['crypto', 'Bitcoin', 'litecoin', 'btc', 'Cryptocurrency',

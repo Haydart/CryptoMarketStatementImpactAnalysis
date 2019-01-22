@@ -1,8 +1,9 @@
-from twitter.data_preprocessing.preprocessing import join_files_to_dataframe, file_to_dataframe, sort_by
-from sentiment_analyzer import analyze_sentiment
-import os
 import glob
 import json
+import os
+
+from preprocessing.preprocessing import join_files_to_dataframe, file_to_dataframe, sort_by
+from sentiment_analysis.sentiment_analyzer import analyze_sentiment
 
 
 def group_by_username(dataframe):

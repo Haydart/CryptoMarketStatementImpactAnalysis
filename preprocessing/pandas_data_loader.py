@@ -1,5 +1,6 @@
-import pandas as pd
 import glob
+
+import pandas as pd
 
 
 def load_crypto_data(file_path):

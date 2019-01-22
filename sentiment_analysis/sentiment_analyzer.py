@@ -1,6 +1,5 @@
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import numpy as np
-import math
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 
 def get_avg_sentiments(sentences):

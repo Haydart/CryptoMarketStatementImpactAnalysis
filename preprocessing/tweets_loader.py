@@ -1,6 +1,8 @@
-import pandas as pd
 import json
-from twitter.data_preprocessing.preprocessing import get_unique_tweets
+
+import pandas as pd
+
+from preprocessing.preprocessing import get_unique_tweets
 
 
 def load_tweets(file_path):

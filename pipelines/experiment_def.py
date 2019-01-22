@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
 
-from RedditWrapper.data_loader import load_reddit_data
 from main import create_dataset
 from model.model import create_model, train, test, evaluate
 from model.preprocessing import normalize_array, get_sentiments_prices, split
 from preprocessing.pandas_data_loader import load_crypto_data
+from preprocessing.reddit_data_loader import load_reddit_data
 from preprocessing.tweets_loader import load_tweets
 
 

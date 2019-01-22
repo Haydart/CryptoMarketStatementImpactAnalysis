@@ -1,8 +1,8 @@
 import json
 import os
 
-from data_acquisition.twitter.twitter_scrapper import scrap_user
-from twitter.influencers_finder.top_influencers import find_influencers_in_tweets, find_influencers_in_stats, \
+from data_acquisition.twitter.twitter_scrapper import scrap_single_user
+from influencers.twitter_utils import find_influencers_in_tweets, find_influencers_in_stats, \
     find_users_tweets_and_extract_sentiments
 
 HASHTAG = "BTC"
@@ -14,7 +14,7 @@ def get_user_stats(files, number):
      top_users = list(find_influencers_in_tweets(files, number)['username'])
      print(top_users)
      for idx in range(0, number):
-         scrap_user(top_users[idx], USER_STATS_FILE_PATH)
+         scrap_single_user(top_users[idx], USER_STATS_FILE_PATH)
 
 
 def get_top_influencers(number):

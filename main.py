@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
-from sentiment_analyzer import get_avg_sentiments
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+
+from sentiment_analysis.sentiment_analyzer import get_avg_sentiments
 
 
 def create_dataset(df_coin, df_twitter, df_reddit, window_width, filename):

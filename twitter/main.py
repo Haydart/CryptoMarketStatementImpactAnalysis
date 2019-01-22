@@ -1,8 +1,9 @@
-from twitter.influencers_finder.top_influencers import find_influencers_in_tweets, find_influencers_in_stats, find_users_tweets_and_extract_sentiments
-from twitter.data_downloader.scrapper import scrap_user
-import os
 import json
+import os
 
+from data_acquisition.twitter.twitter_scrapper import scrap_user
+from twitter.influencers_finder.top_influencers import find_influencers_in_tweets, find_influencers_in_stats, \
+    find_users_tweets_and_extract_sentiments
 
 HASHTAG = "BTC"
 DATA_DIR = ".\\data\\"

@@ -1,7 +1,8 @@
 import glob
 import json
-import pandas as pd
 import re
+
+import pandas as pd
 
 
 def file_to_dataframe(file_path):

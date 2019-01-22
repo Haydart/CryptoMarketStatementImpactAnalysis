@@ -1,4 +1,5 @@
 import csv
+
 import pandas as pd
 
 FILE_PATH = "crypto dataset/BTC-USD_2015-2018_1min/gemini_BTCUSD_2018_1min.csv"

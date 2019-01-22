@@ -1,11 +1,12 @@
-from model.preprocessing import normalize_array, get_sentiments_prices, split
-from model.model import create_model, train, test, evaluate
-from main import create_dataset
-from twitter.data_loader.loader import load_tweets
-from crypto.data_loader.loader import load_crypto_data
-from RedditWrapper.data_loader import load_reddit_data
 import numpy as np
 import pandas as pd
+
+from RedditWrapper.data_loader import load_reddit_data
+from main import create_dataset
+from model.model import create_model, train, test, evaluate
+from model.preprocessing import normalize_array, get_sentiments_prices, split
+from preprocessing.pandas_data_loader import load_crypto_data
+from preprocessing.tweets_loader import load_tweets
 
 
 def load_social_datasets():
@@ -24,7 +25,7 @@ def remove_nan(dataset, column_with_nan):
         sequence = [nan_indexes[i]]
         j = i + 1
 
-        while j < len(nan_indexes) and nan_indexes[j] - nan_indexes[j-1] == 1:
+        while j < len(nan_indexes) and nan_indexes[j] - nan_indexes[j - 1] == 1:
             sequence.append(nan_indexes[j])
             j += 1
 
@@ -54,7 +55,8 @@ def create_dataset(window_size, file_name):
 
 
 def run_expreminent(look_forward, hidden_size, batch_size, epochs, dropout, dataset):
-    x, y = get_sentiments_prices(dataset['twitter_sentiments'], dataset["reddit_sentiments"], dataset["coin_price"], look_forward)
+    x, y = get_sentiments_prices(dataset['twitter_sentiments'], dataset["reddit_sentiments"], dataset["coin_price"],
+                                 look_forward)
 
     for i in range(x.shape[1]):
         x[:, i] = normalize_array(x[:, i])
@@ -70,7 +72,7 @@ def run_expreminent(look_forward, hidden_size, batch_size, epochs, dropout, data
     model = train(model, train_x, train_y, batch_size=batch_size, epochs=epochs)
     y_pred = test(model, test_x)
     score = evaluate(test_y, y_pred)
-    print('Test Score: %.2f RMSE' % (score))
+    print('Test Score: %.2f RMSE' % score)
     return score
 
 
